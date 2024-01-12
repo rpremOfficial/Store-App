@@ -61,4 +61,37 @@ app.MapGet("/games/{id}", (int id) =>
 )
 .WithName(GetGameEndpointName);
 
+// Post requests
+
+app.MapPost("/games", (Game game) =>
+    {
+        game.ID = games.Max(game => game.ID) + 1;
+        games.Add(game);
+
+        return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.ID }, game);
+    }
+);
+
+
+// Put requests
+
+app.MapPut("/games/{id}", (int id, Game updatedGame) =>
+    {
+        Game? existingGame = games.Find(game => game.ID == id);
+
+        if (existingGame is null)
+        {
+            return Results.NotFound();
+        }
+
+        existingGame.Name = updatedGame.Name;
+        existingGame.Genre = updatedGame.Genre;
+        existingGame.Price = updatedGame.Price;
+        existingGame.ReleaseDate = updatedGame.ReleaseDate;
+        existingGame.ImageUri = updatedGame.ImageUri;
+
+        return Results.NoContent();
+    }
+);
+
 app.Run();
