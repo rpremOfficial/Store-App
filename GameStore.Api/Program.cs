@@ -94,4 +94,45 @@ app.MapPut("/games/{id}", (int id, Game updatedGame) =>
     }
 );
 
+
+// Patch requests
+
+app.MapPatch("/games/{id}", (int id, Game game) =>
+    {
+        Game? existingGame = games.Find(game => game.ID == id);
+
+        if (existingGame is null)
+        {
+            games.Add(game);
+
+            return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.ID }, game);
+        }
+
+        existingGame.Name = game.Name;
+        existingGame.Genre = game.Genre;
+        existingGame.Price = game.Price;
+        existingGame.ReleaseDate = game.ReleaseDate;
+        existingGame.ImageUri = game.ImageUri;
+
+        return Results.NoContent();
+    }
+);
+
+
+// Delete requests
+
+app.MapDelete("/games/{id}", (int id) =>
+    {
+        Game? existingGame = games.Find(game => game.ID == id);
+
+        if (existingGame is not null)
+        {
+            games.Remove(existingGame);
+        }
+
+        return Results.NoContent();
+    }
+);
+
+
 app.Run();
