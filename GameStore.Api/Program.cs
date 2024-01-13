@@ -6,5 +6,6 @@ var app = builder.Build();
 
 app.MapGamesEndpoints();
 
+app.MapGet("/", () => "Hello World!");
 
 app.Run();
