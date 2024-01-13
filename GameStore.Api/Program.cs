@@ -41,13 +41,16 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 
+var group = app.MapGroup("/games");
+
+
 // Get requests
 
 app.MapGet("/", () => "Hello World!");
 
-app.MapGet("/games", () => games);
+group.MapGet("/", () => games);
 
-app.MapGet("/games/{id}", (int id) =>
+group.MapGet("/{id}", (int id) =>
     {
         Game? game = games.Find(game => game.ID == id);
 
@@ -63,7 +66,7 @@ app.MapGet("/games/{id}", (int id) =>
 
 // Post requests
 
-app.MapPost("/games", (Game game) =>
+group.MapPost("/", (Game game) =>
     {
         game.ID = games.Max(game => game.ID) + 1;
         games.Add(game);
@@ -75,7 +78,7 @@ app.MapPost("/games", (Game game) =>
 
 // Put requests
 
-app.MapPut("/games/{id}", (int id, Game updatedGame) =>
+group.MapPut("/{id}", (int id, Game updatedGame) =>
     {
         Game? existingGame = games.Find(game => game.ID == id);
 
@@ -97,7 +100,7 @@ app.MapPut("/games/{id}", (int id, Game updatedGame) =>
 
 // Patch requests
 
-app.MapPatch("/games/{id}", (int id, Game game) =>
+group.MapPatch("/{id}", (int id, Game game) =>
     {
         Game? existingGame = games.Find(game => game.ID == id);
 
@@ -121,7 +124,7 @@ app.MapPatch("/games/{id}", (int id, Game game) =>
 
 // Delete requests
 
-app.MapDelete("/games/{id}", (int id) =>
+group.MapDelete("/{id}", (int id) =>
     {
         Game? existingGame = games.Find(game => game.ID == id);
 
