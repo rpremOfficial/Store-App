@@ -4,7 +4,7 @@ using GameStore.Api.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IGamesRepository, InMemGamesRepository>();
 
-var connString = builder.Configuration.getConnectionString("GameStoreContext");
+var connString = builder.Configuration.GetConnectionString("GameStoreContext");
 
 var app = builder.Build();
 
