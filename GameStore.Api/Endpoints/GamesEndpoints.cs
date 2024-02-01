@@ -16,12 +16,12 @@ public static class GamesEndpoints
 
         // Get requests
 
-        group.MapGet("/", (IGamesRepository repository) =>
-            repository.GetAll().Select(game => game.AsDto()));
+        group.MapGet("/", async (IGamesRepository repository) =>
+            (await repository.GetAllAsync()).Select(game => game.AsDto()));
 
-        group.MapGet("/{id}", (IGamesRepository repository, int id) =>
+        group.MapGet("/{id}", async (IGamesRepository repository, int id) =>
             {
-                Game? game = repository.Get(id);
+                Game? game = await repository.GetAsync(id);
                 return game is not null ? Results.Ok(game.AsDto()) : Results.NotFound();
             }
         )
@@ -29,7 +29,7 @@ public static class GamesEndpoints
 
         // Post requests
 
-        group.MapPost("/", (IGamesRepository repository, CreateGameDto gameDto) =>
+        group.MapPost("/", async (IGamesRepository repository, CreateGameDto gameDto) =>
             {
                 Game game = new()
                 {
@@ -40,7 +40,7 @@ public static class GamesEndpoints
                     ImageUri = gameDto.ImageUri
                 };
 
-                repository.Create(game);
+                await repository.CreateAsync(game);
                 return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.ID }, game);
             }
         );
@@ -48,11 +48,11 @@ public static class GamesEndpoints
 
         // Put requests
 
-        group.MapPut("/{id}", (IGamesRepository repository, int id, UpdateGameDto UpdatedGameDto) =>
+        group.MapPut("/{id}", async (IGamesRepository repository, int id, UpdateGameDto UpdatedGameDto) =>
             {
 
 
-                Game? existingGame = repository.Get(id);
+                Game? existingGame = await repository.GetAsync(id);
 
                 if (existingGame is null)
                 {
@@ -65,7 +65,7 @@ public static class GamesEndpoints
                 existingGame.ReleaseDate = UpdatedGameDto.ReleaseDate;
                 existingGame.ImageUri = UpdatedGameDto.ImageUri;
 
-                repository.Update(existingGame);
+                await repository.UpdateAsync(existingGame);
 
                 return Results.NoContent();
             }
@@ -74,9 +74,9 @@ public static class GamesEndpoints
 
         // Patch requests
 
-        group.MapPatch("/{id}", (IGamesRepository repository, int id, UpdateGameDto UpdatedGameDto) =>
+        group.MapPatch("/{id}", async (IGamesRepository repository, int id, UpdateGameDto UpdatedGameDto) =>
             {
-                Game? existingGame = repository.Get(id);
+                Game? existingGame = await repository.GetAsync(id);
 
                 if (existingGame is null)
                 {
@@ -89,7 +89,7 @@ public static class GamesEndpoints
                         ImageUri = UpdatedGameDto.ImageUri
                     };
 
-                    repository.Create(game);
+                    await repository.CreateAsync(game);
                     return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.ID }, game);
                 }
 
@@ -99,7 +99,7 @@ public static class GamesEndpoints
                 existingGame.ReleaseDate = UpdatedGameDto.ReleaseDate;
                 existingGame.ImageUri = UpdatedGameDto.ImageUri;
 
-                repository.Update(existingGame);
+                await repository.UpdateAsync(existingGame);
 
                 return Results.NoContent();
             }
@@ -108,13 +108,13 @@ public static class GamesEndpoints
 
         // Delete requests
 
-        group.MapDelete("/{id}", (IGamesRepository repository, int id) =>
+        group.MapDelete("/{id}", async (IGamesRepository repository, int id) =>
             {
-                Game? existingGame = repository.Get(id);
+                Game? existingGame = await repository.GetAsync(id);
 
                 if (existingGame is not null)
                 {
-                    repository.Delete(id);
+                    await repository.DeleteAsync(id);
                 }
 
                 return Results.NoContent();
